@@ -1,0 +1,16 @@
+from datetime import datetime
+from airflow import DAG
+from airflow.operators.postgres_operator import PostgresOperator
+
+dag_params = {
+    'dag_id': 'PostgresOperator_dag_select',
+    'start_date': datetime(2019, 10, 5),
+    'schedule_interval': None
+}
+
+with DAG(**dag_params) as dag:
+
+    select_table = PostgresOperator(
+        task_id='select_table',
+        sql='''SELECT * FROM jsonb_to_recordset('[{"id":"0001","type":"donut","name":"Cake","ppu":0.55,"batters":{"batter":[{"id":"1001","type":"Regular"},{"id":"1002","type":"Chocolate"},{"id":"1003","type":"Blueberry"},{"id":"1004","type":"Devils Food"}]},"topping":[{"id":"5001","type":"None"},{"id":"5002","type":"Glazed"},{"id":"5005","type":"Sugar"},{"id":"5007","type":"Powdered Sugar"},{"id":"5006","type":"Chocolate with Sprinkles"},{"id":"5003","type":"Chocolate"},{"id":"5004","type":"Maple"}]},{"id":"0002","type":"donut","name":"Raised","ppu":0.55,"batters":{"batter":[{"id":"1001","type":"Regular"}]},"topping":[{"id":"5001","type":"None"},{"id":"5002","type":"Glazed"},{"id":"5005","type":"Sugar"},{"id":"5003","type":"Chocolate"},{"id":"5004","type":"Maple"}]},{"id":"0003","type":"donut","name":"Old Fashioned","ppu":0.55,"batters":{"batter":[{"id":"1001","type":"Regular"},{"id":"1002","type":"Chocolate"}]},"topping":[{"id":"5001","type":"None"},{"id":"5002","type":"Glazed"},{"id":"5003","type":"Chocolate"},{"id":"5004","type":"Maple"}]}]'::jsonb) AS t(id integer, type text, name text, ppu real, batters json, topping json);''',
+    )
